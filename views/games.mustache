@@ -1,0 +1,10 @@
+<h1>The Rolling Die - Games</h1>
+<table>
+  <tr><th>Title</th><th>Price</th><th>In Stock</th></tr>
+  {{#games}}
+  <tr><td>{{title}}</td><td>${{price}}</td><td>{{stock}}</td></tr>
+  {{/games}}
+  {{^games}}
+  <tr><td colspan="3">No games yet.</td></tr>
+  {{/games}}
+</table>
