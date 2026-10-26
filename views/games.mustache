@@ -1,10 +1,32 @@
-<h1>The Rolling Die - Games</h1>
-<table>
-  <tr><th>Title</th><th>Price</th><th>In Stock</th></tr>
-  {{#games}}
-  <tr><td>{{title}}</td><td>${{price}}</td><td>{{stock}}</td></tr>
-  {{/games}}
-  {{^games}}
-  <tr><td colspan="3">No games yet.</td></tr>
-  {{/games}}
-</table>
+<!DOCTYPE html>
+<html>
+<head>
+  <title>The Rolling Die - Games</title>
+</head>
+<body>
+  <h1>The Rolling Die - Games</h1>
+  <p><a href="/login">Staff login</a></p>
+
+  <table border="1" cellpadding="6">
+    <tr>
+      <th>Title</th>
+      <th>Category</th>
+      <th>Players</th>
+      <th>Price</th>
+      <th>In Stock</th>
+    </tr>
+    {{#games}}
+    <tr>
+      <td>{{title}}</td>
+      <td>{{category}}</td>
+      <td>{{min_players}}-{{max_players}}</td>
+      <td>${{price}}</td>
+      <td>{{stock}}</td>
+    </tr>
+    {{/games}}
+    {{^games}}
+    <tr><td colspan="5">No games yet.</td></tr>
+    {{/games}}
+  </table>
+</body>
+</html>

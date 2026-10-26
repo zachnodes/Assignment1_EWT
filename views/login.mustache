@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Staff Login - The Rolling Die</title>
+</head>
+<body>
+  <h1>Staff Login</h1>
+
+  {{#error}}
+  <p style="color: red;">{{error}}</p>
+  {{/error}}
+
+  <form method="POST" action="/login">
+    <p>
+      <label>Username<br>
+        <input type="text" name="username" required>
+      </label>
+    </p>
+    <p>
+      <label>Password<br>
+        <input type="password" name="password" required>
+      </label>
+    </p>
+    <button type="submit">Log in</button>
+  </form>
+
+  <p><a href="/games">Back to games</a></p>
+</body>
+</html>

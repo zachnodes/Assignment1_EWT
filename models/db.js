@@ -1,10 +1,12 @@
-const sqlite3 = require('sqlite3').verbose();
+const sqlite3 = require('sqlite3');
+const bcrypt = require('bcrypt');
+const config = require('../config.json');
 
 // Opens the database file (creates it if it doesn't exist)
 const db = new sqlite3.Database('./database.db');
 
-// Creates the tables if they aren't already there,
-// then calls the callback so the app knows it can start.
+// Creates the tables if they aren't already there, adds a default
+// manager account, then calls the callback so the app can start.
 function initDatabase(callback) {
   // serialize makes the statements run one after another, in order
   db.serialize(function() {
@@ -34,11 +36,23 @@ function initDatabase(callback) {
     `, function(err) {
       if (err) {
         console.log('Error creating users table:', err);
-        return;
       }
-      console.log('Database ready');
-      callback();
     });
+
+    // Default manager login comes from config.json (kept out of git)
+    // OR IGNORE skips this if the admin user already exists.
+    db.run(
+      'INSERT OR IGNORE INTO users (username, password) VALUES (?, ?)',
+      [config.adminUsername, bcrypt.hashSync(config.adminPassword, 10)],
+      function(err) {
+        if (err) {
+          console.log('Error creating default user:', err);
+          return;
+        }
+        console.log('Database ready');
+        callback();
+      }
+    );
   });
 }
 
