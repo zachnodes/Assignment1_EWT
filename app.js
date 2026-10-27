@@ -1,20 +1,24 @@
 const express = require('express');
 const mustacheExpress = require('mustache-express');
 const session = require('express-session');
-
-
+const { Client, GatewayIntentBits, Events } = require('discord.js');
 const { initDatabase } = require('./models/db');
-const requireLogin = require('./middleware/requireLogin');
-const authController = require('./controllers/authController');
-const gameController = require('./controllers/gameController');
 
+const loginRoute = require('./routes/loginRoute');
+const managerRoute = require('./routes/managerRoute');
+const gamesRoute = require('./routes/gamesRoute');
+const botCommands = require('./bot/commands');
+const config = require('./config.json');
 
 const app = express();
+const http = require('http').Server(app);
+const io = require('socket.io')(http);
+
 app.engine('mustache', mustacheExpress());
 app.set('view engine', 'mustache');
 app.set('views', __dirname + '/views');
 
-// Lets Express read form data (needed later for login and add/edit forms)
+// Lets Express read form data (different from experss.json(), which reads json from a fetch body)
 app.use(express.urlencoded({ extended: false }));
 
 app.use(session({
@@ -23,30 +27,44 @@ app.use(session({
   saveUninitialized: false
 }));
  
-
-app.get('/', function(req, res) {
+// Small redirect no need for own file
+app.get('/', (req, res) => {
   res.redirect('/games');
 });
-app.get('/games', gameController.showPublicGames);
+// Reg routes
+app.use('/login', loginRoute); 
+app.use('/manager', managerRoute);
+app.use('games', gamesRoute);
+
+
+const client = new Client({ intents: [GatewayIntentBits.Guilds] });
  
-
-app.get('/login', authController.showLogin);
-app.post('/login', authController.handleLogin);
-app.get('/logout', authController.logout);
+client.once(Events.ClientReady, () => {
+  console.log('Bot logged in as ' + client.user.tag);
+});
  
-app.get('/manager', requireLogin, gameController.showDashboard);
-app.get('/manager/add', requireLogin, gameController.showAddForm);
-app.post('/manager/add', requireLogin, gameController.handleAdd);
-app.get('/manager/edit/:id', requireLogin, gameController.showEditForm);
-app.post('/manager/edit/:id', requireLogin, gameController.handleEdit);
-app.post('/manager/delete/:id', requireLogin, gameController.handleDelete);
-
-app.get('/games', gameController.showPublicGames);
-
+client.on(Events.InteractionCreate, (interaction) => {
+  if (!interaction.isChatInputCommand()) {
+    return;
+  }
+ 
+  // After the bot replies, push the activity to the manager dashboard
+  botCommands.handleCommand(interaction, (commandText) => {
+    io.emit('botactivity', {
+      command: commandText,
+      user: interaction.user.username,
+      time: new Date().toLocaleTimeString()
+    });
+  });
+});
 
 // Set up the database first, then start listening for requests
-initDatabase(function() {
-  app.listen(3000, function() {
+initDatabase(() => {
+  http.listen(3000, () => {
     console.log('Server listening on http://localhost:3000');
+  });
+
+  client.login(config.botToken).catch((err) => {
+    console.log('Bot could not log in, check botToken in config.json:', err.message);
   });
 });

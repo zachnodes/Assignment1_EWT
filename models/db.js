@@ -5,11 +5,11 @@ const config = require('../config.json');
 // Opens the database file (creates it if it doesn't exist)
 const db = new sqlite3.Database('./database.db');
 
-// Creates the tables if they aren't already there, adds a default
-// manager account, then calls the callback so the app can start.
-function initDatabase(callback) {
+// Creates the tables if they aren't already there
+const initDatabase = (func) => {
   // serialize makes the statements run one after another, in order
-  db.serialize(function() {
+  db.serialize(() => {
+    // Create games table
     db.run(`
       CREATE TABLE IF NOT EXISTS games (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -21,30 +21,29 @@ function initDatabase(callback) {
         max_players INTEGER,
         description TEXT
       )
-    `, function(err) {
+    `, (err) => {
       if (err) {
         console.log('Error creating games table:', err);
       }
     });
-
+    // Create users table
     db.run(`
       CREATE TABLE IF NOT EXISTS users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         username TEXT NOT NULL UNIQUE,
         password TEXT NOT NULL
       )
-    `, function(err) {
+    `, (err) => {
       if (err) {
         console.log('Error creating users table:', err);
       }
     });
-
-    // Default manager login comes from config.json (kept out of git)
-    // OR IGNORE skips this if the admin user already exists.
+    
+    // Insert username and password from config.json
     db.run(
       'INSERT OR IGNORE INTO users (username, password) VALUES (?, ?)',
       [config.adminUsername, bcrypt.hashSync(config.adminPassword, 10)],
-      function(err) {
+      (err) => {
         if (err) {
           console.log('Error creating default user:', err);
           return;

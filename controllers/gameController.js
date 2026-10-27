@@ -2,10 +2,11 @@ const gameModel = require('../models/gameModel');
 
 // ---------- Public page (no login) ----------
 
-function showPublicGames(req, res) {
-  gameModel.getAllGames(function(err, games) {
+const showPublicGames = (req, res) => {
+  gameModel.getAllGames((err, games) => {
     if (err) {
       res.send('Something went wrong');
+      console.log(err);
       return;
     }
     res.render('games', { games: games });
@@ -16,7 +17,7 @@ function showPublicGames(req, res) {
 
 // Pulls the game fields out of a submitted form and converts numbers.
 // Empty optional fields become null.
-function readGameFromForm(body) {
+const readGameFromForm = (body) => {
   return {
     title: body.title.trim(),
     category: body.category ? body.category.trim() : null,
@@ -29,7 +30,7 @@ function readGameFromForm(body) {
 }
 
 // Returns an error message, or null if the game looks fine.
-function checkGame(game) {
+const checkGame = (game) => {
   if (!game.title) {
     return 'Title is required.';
   }
@@ -43,15 +44,15 @@ function checkGame(game) {
 }
 
 // Turns a database error into a message the manager can understand.
-function friendlyError(err) {
+const friendlyError = (err) => {
   if (err.message.includes('UNIQUE')) {
     return 'A game with that title already exists.';
   }
   return 'Something went wrong saving the game.';
 }
 
-function showDashboard(req, res) {
-  gameModel.getAllGames(function(err, games) {
+const showDashboard = (req, res) => {
+  gameModel.getAllGames((err, games) => {
     if (err) {
       res.send('Something went wrong');
       return;
@@ -60,11 +61,11 @@ function showDashboard(req, res) {
   });
 }
 
-function showAddForm(req, res) {
+const showAddForm = (req, res) => {
   res.render('gameForm', { heading: 'Add Game', action: '/manager/add' });
 }
 
-function handleAdd(req, res) {
+const handleAdd = (req, res) => {
   const game = readGameFromForm(req.body);
   const problem = checkGame(game);
 
@@ -73,7 +74,7 @@ function handleAdd(req, res) {
     return;
   }
 
-  gameModel.addGame(game, function(err) {
+  gameModel.addGame(game, (err) => {
     if (err) {
       res.render('gameForm', { heading: 'Add Game', action: '/manager/add', game: game, error: friendlyError(err) });
       return;
@@ -82,8 +83,8 @@ function handleAdd(req, res) {
   });
 }
 
-function showEditForm(req, res) {
-  gameModel.getGameById(req.params.id, function(err, game) {
+const showEditForm = (req, res) => {
+  gameModel.getGameById(req.params.id, (err, game) => {
     if (err || !game) {
       res.redirect('/manager');
       return;
@@ -92,7 +93,7 @@ function showEditForm(req, res) {
   });
 }
 
-function handleEdit(req, res) {
+const handleEdit = (req, res) => {
   const id = req.params.id;
   const game = readGameFromForm(req.body);
   const problem = checkGame(game);
@@ -103,7 +104,7 @@ function handleEdit(req, res) {
     return;
   }
 
-  gameModel.updateGame(id, game, function(err) {
+  gameModel.updateGame(id, game, (err) => {
     if (err) {
       res.render('gameForm', { heading: 'Edit Game', action: action, game: game, error: friendlyError(err) });
       return;
@@ -112,8 +113,8 @@ function handleEdit(req, res) {
   });
 }
 
-function handleDelete(req, res) {
-  gameModel.deleteGame(req.params.id, function(err) {
+const handleDelete = (req, res) => {
+  gameModel.deleteGame(req.params.id, (err) => {
     if (err) {
       console.log('Error deleting game:', err);
     }

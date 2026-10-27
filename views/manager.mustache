@@ -37,6 +37,30 @@
     {{/games}}
   </table>
 
-  <!-- The live bot activity feed (websockets) will go here later -->
+  <h2>Live Bot Activity</h2>
+  <ul id="activity">
+    <li id="no-activity">No bot activity yet.</li>
+  </ul>
+
+  <!-- socket.io serves this file automatically -->
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io();
+
+    // Runs every time the server sends a 'botactivity' message
+    socket.on('botactivity', (data) => {
+      const empty = document.getElementById('no-activity');
+      if (empty) {
+        empty.remove();
+      }
+
+      const item = document.createElement('li');
+      item.textContent = data.time + ' - ' + data.user + ' used ' + data.command;
+
+      // Newest at the top
+      const list = document.getElementById('activity');
+      list.prepend(item);
+    });
+  </script>
 </body>
 </html>
