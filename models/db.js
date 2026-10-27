@@ -6,7 +6,7 @@ const config = require('../config.json');
 const db = new sqlite3.Database('./database.db');
 
 // Creates the tables if they aren't already there
-const initDatabase = (func) => {
+const initDatabase = (callback) => {
   // serialize makes the statements run one after another, in order
   db.serialize(() => {
     // Create games table

@@ -1,0 +1,284 @@
+/* ---------- The Rolling Die - shared styles (soft embossed look) ---------- */
+
+:root {
+  --base: #e9e4dc;          /* page background */
+  --card: #f5f1eb;          /* raised things (table, form card, feed) - a lighter shade of the page */
+  --well: #e6e0d6;          /* pushed-in things (input boxes) - a darker shade */
+  --shadow-dark: #c9c2b6;   /* bottom-right shadow */
+  --text: #3b2f26;
+  --text-soft: #857565;
+  --green: #2f7a58;
+  --green-dark: #24624a;
+  --red: #c04848;
+
+  /* Raised = sticks out of the page. Pressed = pushed into the page. */
+  /* Shadow only falls down and to the right, no light glow on the top side */
+  --raised: 6px 8px 18px var(--shadow-dark);
+  --raised-small: 3px 4px 10px var(--shadow-dark);
+  --pressed: inset 3px 3px 7px var(--shadow-dark);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 48px 16px;
+  background: var(--base);
+  color: var(--text);
+  font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+}
+
+/* Keeps every page a readable width and centered */
+body > * {
+  max-width: 960px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+h1 {
+  font-size: 2.2rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin-top: 0;
+  margin-bottom: 12px;
+  text-shadow: 2px 2px 3px var(--shadow-dark);
+}
+
+h2 {
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin-top: 48px;
+}
+
+p {
+  color: var(--text-soft);
+}
+
+a {
+  color: var(--green);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+a:hover {
+  color: var(--green-dark);
+  text-decoration: underline;
+}
+
+/* ---------- Tables ---------- */
+
+table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: var(--card);
+  border-radius: 18px;
+  box-shadow: var(--raised);
+  padding: 12px;
+  margin-top: 24px;
+}
+
+th {
+  text-align: left;
+  padding: 14px 16px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-soft);
+  border-bottom: 2px solid var(--shadow-dark);
+}
+
+td {
+  padding: 16px;
+  border-bottom: 1px solid #e6dfd4;
+}
+
+tr:last-child td {
+  border-bottom: none;
+}
+
+/* Hovered row sinks into the table */
+tr:hover td {
+  background: #ede7de;
+}
+
+tr:hover td:first-child {
+  border-radius: 10px 0 0 10px;
+}
+
+tr:hover td:last-child {
+  border-radius: 0 10px 10px 0;
+}
+
+/* ---------- Forms (login, add, edit) ---------- */
+
+/* The big forms get a raised card. Small inline forms (like Delete) don't. */
+body > form {
+  background: var(--card);
+  border-radius: 22px;
+  box-shadow: var(--raised);
+  padding: 16px 32px 32px;
+}
+
+/* On pages that are mainly a form (login, add, edit), narrow everything to the card's width */
+body:has(> form) > * {
+  max-width: 480px;
+}
+
+label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-soft);
+}
+
+/* Inputs look pushed into the card */
+input,
+textarea {
+  width: 100%;
+  margin-top: 8px;
+  padding: 14px 16px;
+  border: none;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-family: inherit;
+  color: var(--text);
+  background: var(--well);
+  box-shadow: var(--pressed);
+}
+
+input:focus,
+textarea:focus {
+  outline: none;
+  box-shadow: var(--pressed), 0 0 0 2px var(--green);
+}
+
+/* Buttons stick out, then press in when clicked */
+button {
+  background: var(--green);
+  color: #ffffff;
+  border: none;
+  border-radius: 12px;
+  padding: 12px 28px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  margin-right: 16px;
+  box-shadow: var(--raised-small);
+  transition: transform 0.1s, box-shadow 0.1s;
+}
+
+button:hover {
+  background: var(--green-dark);
+}
+
+button:active {
+  transform: translateY(1px);
+  box-shadow: inset 2px 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+/* Edit link in the manager table, styled as a soft raised pill */
+td a {
+  display: inline-block;
+  padding: 6px 14px;
+  border-radius: 10px;
+  box-shadow: var(--raised-small);
+  font-size: 0.85rem;
+}
+
+td a:hover {
+  text-decoration: none;
+  box-shadow: var(--pressed);
+}
+
+/* Delete buttons inside the manager table: smaller and red */
+td form button {
+  background: var(--red);
+  padding: 6px 14px;
+  font-size: 0.85rem;
+  margin-left: 10px;
+  margin-right: 0;
+  border-radius: 10px;
+}
+
+td form button:hover {
+  background: #a23a3a;
+}
+
+/* Error messages (wrong password, duplicate title, etc.) */
+p[style*="color: red"] {
+  color: var(--red) !important;
+  font-weight: 600;
+  border-radius: 12px;
+  padding: 12px 16px;
+  box-shadow: var(--pressed);
+}
+
+/* ---------- Live bot activity feed ---------- */
+
+#activity {
+  list-style: none;
+  padding: 0;
+}
+
+#activity li {
+  background: var(--card);
+  border-radius: 14px;
+  box-shadow: var(--raised-small);
+  border-left: 5px solid var(--green);
+  padding: 14px 18px;
+  margin-bottom: 14px;
+}
+
+#activity #no-activity {
+  border-left-color: var(--shadow-dark);
+  color: var(--text-soft);
+  font-style: italic;
+  box-shadow: var(--pressed);
+}
+
+/* ---------- Phones ---------- */
+
+@media (max-width: 640px) {
+  body {
+    padding: 24px 12px;
+  }
+
+  h1 {
+    font-size: 1.6rem;
+  }
+
+  body > form {
+    padding: 8px 20px 24px;
+  }
+
+  /* Lets wide tables scroll sideways instead of squishing */
+  table {
+    display: block;
+    overflow-x: auto;
+  }
+
+  th,
+  td {
+    padding: 10px;
+    white-space: nowrap;
+  }
+}
+
+/* ---------- Animated particle background (drawn by particles.js) ---------- */
+
+#particles {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  pointer-events: none;   /* clicks go through to the page */
+  max-width: none;
+  margin: 0;
+}

@@ -20,7 +20,7 @@ app.set('views', __dirname + '/views');
 
 // Lets Express read form data (different from experss.json(), which reads json from a fetch body)
 app.use(express.urlencoded({ extended: false }));
-
+app.use(express.static('public'));
 app.use(session({
   secret: 'rolling-die-secret',
   resave: false,
@@ -32,9 +32,9 @@ app.get('/', (req, res) => {
   res.redirect('/games');
 });
 // Reg routes
-app.use('/login', loginRoute); 
+app.use(['/login', '/logout'], loginRoute); 
 app.use('/manager', managerRoute);
-app.use('games', gamesRoute);
+app.use('/games', gamesRoute);
 
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
